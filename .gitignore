@@ -1,0 +1,4 @@
+
+# Python cache
+plugins/**/__pycache__/
+plugins/**/*.pyc
