@@ -40,6 +40,7 @@ TPDB_BASE      = "https://api.theporndb.net"
 IMPORT_URL_HOSTS = ("gaydvdempire.com", "adultempire.com", "theporndb.net")
 AEBN_BASE = "https://gay.aebn.com"
 AEBN_SEARCH_URL = "https://gay.aebn.com/gay/search?queryType=Free+Form&query="
+AEBN_MOBILE_BASE = "https://m.aebn.net"
 
 # Match preference: gay first, bi second, straight last.
 _GAY_HINTS = {
@@ -417,14 +418,26 @@ def parse_aebn_movie_page(html, url):
     tm = re.search(r'<title>\s*Watch\s+(.+?)\s*\|\s*Gay\s*\|\s*AEBN\s*</title>', html, re.IGNORECASE)
     if tm:
         data["title"] = tm.group(1).strip()
+    if not data["title"]:
+        tm2 = re.search(r'<title>\s*(.+?)\s*(?:\||-)+\s*AEBN\s*</title>', html, re.IGNORECASE)
+        if tm2:
+            data["title"] = re.sub(r'\s+', ' ', tm2.group(1)).strip()
 
     rm = re.search(r'Released:</span>\s*([^<]+)', html, re.IGNORECASE)
     if rm:
         data["year"] = _parse_year_from_date(rm.group(1))
+    if not data["year"]:
+        rm2 = re.search(r'\b(?:Released|Release Date|Released On)\b\s*[:\-]?\s*([^<\n]+)', html, re.IGNORECASE)
+        if rm2:
+            data["year"] = _parse_year_from_date(rm2.group(1))
 
     sm = re.search(r'section-detail-list-item-studio[^>]*>.*?Studio:</span>\s*<a[^>]*>([^<]+)</a>', html, re.IGNORECASE | re.DOTALL)
     if sm:
         data["studio"] = sm.group(1).strip()
+    if not data["studio"]:
+        sm2 = re.search(r'href=["\"](?:/gay/studios?/\d+/[^"\"]+|/studio/\d+[^"\"]*)["\"][^>]*>\s*([^<]+?)\s*</a>', html, re.IGNORECASE)
+        if sm2:
+            data["studio"] = sm2.group(1).strip()
 
     fm = re.search(r'class="dts-modal-boxcover-front"\s+src="([^"]+)"', html, re.IGNORECASE)
     bm = re.search(r'class="dts-modal-boxcover-back"\s+src="([^"]+)"', html, re.IGNORECASE)
@@ -432,11 +445,23 @@ def parse_aebn_movie_page(html, url):
         data["front_image"] = _abs_url(fm.group(1).strip())
     if bm:
         data["back_image"] = _abs_url(bm.group(1).strip())
+    if not data["front_image"]:
+        # Mobile pages commonly expose the box cover via the BoxCovers image path.
+        fm2 = re.search(r'<img[^>]+src=["\"](https?://[^"\"]*?/BoxCovers/[^"\"]+)["\"]', html, re.IGNORECASE)
+        if fm2:
+            data["front_image"] = _abs_url(fm2.group(1).strip())
 
     cm = re.search(r'<div class="dts-detail-movie-categories-content">(.*?)</div>', html, re.IGNORECASE | re.DOTALL)
     if cm:
         cats = []
         for m in re.finditer(r'<a[^>]*>\s*([^<]+?)\s*</a>', cm.group(1), re.IGNORECASE):
+            c = m.group(1).strip()
+            if c and c not in cats:
+                cats.append(c)
+        data["categories"] = cats
+    if not data["categories"]:
+        cats = []
+        for m in re.finditer(r'href=["\"]/search/movies/category/\d+[^"\"]*["\"][^>]*>\s*([^<]+?)\s*</a>', html, re.IGNORECASE):
             c = m.group(1).strip()
             if c and c not in cats:
                 cats.append(c)
@@ -460,6 +485,12 @@ def parse_aebn_movie_page(html, url):
             if not slug:
                 continue
             p = re.sub(r'[-_]+', ' ', slug).strip().title()
+            if p and p not in perfs:
+                perfs.append(p)
+    # Mobile fallback: /star/<id>/... style links.
+    if not perfs:
+        for pm in re.finditer(r'href=["\"]/star/\d+[^"\"]*["\"][^>]*>\s*([^<]+?)\s*</a>', html, re.IGNORECASE):
+            p = pm.group(1).strip()
             if p and p not in perfs:
                 perfs.append(p)
     data["performers"] = perfs
@@ -488,6 +519,17 @@ def search_aebn_movie(title, year=None):
         links.append(urllib.parse.urljoin(AEBN_BASE, path))
         if len(links) >= 8:
             break
+
+    # Mobile fallback links from m.aebn.net search pages.
+    if len(links) < 8:
+        for m in re.finditer(r'href=["\'](/movie/\d+[^"\']*)["\']', html, re.IGNORECASE):
+            path = m.group(1)
+            if path in seen:
+                continue
+            seen.add(path)
+            links.append(urllib.parse.urljoin(AEBN_MOBILE_BASE, path))
+            if len(links) >= 8:
+                break
 
     if not links:
         return None
@@ -575,7 +617,7 @@ def extract_scene_aebn_url(scene):
         if not u:
             continue
         lu = str(u).lower()
-        if "gay.aebn.com/gay/movies/" in lu:
+        if "gay.aebn.com/gay/movies/" in lu or "m.aebn.net/movie/" in lu:
             return str(u)
     return None
 
