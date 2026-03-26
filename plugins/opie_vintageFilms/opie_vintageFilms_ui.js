@@ -942,6 +942,9 @@
             if (e.target === modal) modal.classList.remove('open');
         });
 
+        // Expose a refresh hook so navbar can open gallery with fresh data.
+        modal._refreshGallery = reloadGallery;
+
         return modal;
     }
 
@@ -1222,101 +1225,27 @@
                 li.id = 'vf-nav-item';
                 li.className = 'nav-item';
 
-                const toggle = document.createElement('span');
+                const toggle = document.createElement('a');
                 toggle.className = 'vf-toggle nav-link';
+                toggle.href = '#';
                 toggle.textContent = '🎬 VintageFilms';
                 li.appendChild(toggle);
 
-                const drop = document.createElement('div');
-                drop.id = 'vf-dropdown';
-
                 const modal = await buildGalleryModal(movies);
                 const coverUrlModal = await buildCoverUrlModal(movies);
-
-                const hdr = document.createElement('div');
-                hdr.className = 'vf-dropdown-header';
-                hdr.innerHTML = `<div class="vf-dropdown-header-title">${movies.length} vintage films</div>`;
-                const galleryBtn = document.createElement('button');
-                galleryBtn.textContent = 'Gallery';
-                galleryBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    drop.classList.remove('open');
-                    modal.classList.add('open');
-                });
-                hdr.appendChild(galleryBtn);
-
-                const coverUrlBtn = document.createElement('button');
-                coverUrlBtn.textContent = '🖼️ Cover URLs';
-                coverUrlBtn.style.cssText = 'background:#5c3d8a;';
-                coverUrlBtn.addEventListener('mouseenter', () => coverUrlBtn.style.background = '#4a2f72');
-                coverUrlBtn.addEventListener('mouseleave', () => coverUrlBtn.style.background = '#5c3d8a');
-                coverUrlBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    drop.classList.remove('open');
-                    Promise.resolve(coverUrlModal._refreshMovies?.())
-                        .then(() => {
-                            coverUrlModal._renderList();
-                            coverUrlModal.classList.add('open');
-                        })
-                        .catch((err) => {
-                            console.error('[vintage-films] Failed to refresh cover URL modal', err);
-                            coverUrlModal._renderList();
-                            coverUrlModal.classList.add('open');
-                        });
-                });
-                hdr.appendChild(coverUrlBtn);
-                drop.appendChild(hdr);
-
-                const search = document.createElement('input');
-                search.id = 'vf-dropdown-search';
-                search.type = 'text';
-                search.placeholder = 'Filter…';
-                drop.appendChild(search);
-
-                const listWrap = document.createElement('div');
-                drop.appendChild(listWrap);
-
-                function renderList(filter) {
-                    listWrap.innerHTML = '';
-                    const query = filter.toLowerCase();
-                    let shown = 0;
-                    for (const m of movies) {
-                        if (query && !m.name.toLowerCase().includes(query)) continue;
-                        if (shown >= 200) break;
-                        const a = document.createElement('a');
-                        const year = m.date ? m.date.slice(0, 4) : '?';
-                        const studio = m.studio?.name ? ` · ${m.studio.name}` : '';
-                        a.href = moviePlayHref(m);
-                        a.textContent = `${m.name} (${year})${studio}`;
-                        a.title = a.textContent;
-                        listWrap.appendChild(a);
-                        shown++;
-                    }
-                    if (!shown) {
-                        const empty = document.createElement('div');
-                        empty.style.cssText = 'padding:0.4rem 0.75rem;color:#666;font-size:0.82rem;';
-                        empty.textContent = 'No movies found';
-                        listWrap.appendChild(empty);
-                    }
-                }
-
-                renderList('');
-                search.addEventListener('input', () => renderList(search.value));
-
-                li.appendChild(drop);
                 liveNavbar.appendChild(li);
 
-                toggle.addEventListener('click', (e) => {
+                toggle.addEventListener('click', async (e) => {
+                    e.preventDefault();
                     e.stopPropagation();
-                    drop.classList.toggle('open');
-                    if (drop.classList.contains('open')) {
-                        search.value = '';
-                        renderList('');
-                        setTimeout(() => search.focus(), 50);
+                    try {
+                        await Promise.resolve(modal._refreshGallery?.());
+                        await Promise.resolve(coverUrlModal._refreshMovies?.());
+                    } catch (err) {
+                        console.error('[vintage-films] Failed to refresh gallery before open', err);
                     }
+                    modal.classList.add('open');
                 });
-                document.addEventListener('click', () => drop.classList.remove('open'));
-                drop.addEventListener('click', (e) => e.stopPropagation());
             } finally {
                 navbarBuildPromise = null;
             }
