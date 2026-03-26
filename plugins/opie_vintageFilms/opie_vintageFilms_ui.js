@@ -26,7 +26,7 @@
     const DEFAULT_VINTAGE_ROOT = '/data/stash/Gay/Vintage';
 
     // ── GraphQL ──────────────────────────────────────────────────────────────
-    async function gql(query, variables) {
+    async function gql(query, variables, options = {}) {
         const resp = await fetch(API, {
             method     : 'POST',
             headers    : { 'Content-Type': 'application/json' },
@@ -36,6 +36,10 @@
         const payload = await resp.json();
         if (payload.errors?.length) {
             console.error('[vintage-films] GraphQL error', payload.errors);
+            if (options.throwOnError) {
+                const msg = payload.errors.map((e) => e?.message || String(e)).join(' | ');
+                throw new Error(msg || 'GraphQL request failed');
+            }
         }
         return payload.data;
     }
@@ -975,9 +979,13 @@
     // ── Cover URL Editor ──────────────────────────────────────────────────────
     async function assignCoverFromUrl(movieId, url) {
         // Stash accepts an image URL directly in front_image; the server downloads it.
-        await gql(M_MOVIE_UPDATE, {
+        const data = await gql(M_MOVIE_UPDATE, {
             input: { id: movieId, front_image: url.trim() },
-        });
+        }, { throwOnError: true });
+        if (!data?.movieUpdate?.id) {
+            throw new Error('Stash did not confirm movie update');
+        }
+        return data.movieUpdate.id;
     }
 
     async function buildCoverUrlModal(moviesRef) {
@@ -1014,6 +1022,15 @@
             rowData.statusEl.className = 'vf-cover-url-status' + (cls ? ' ' + cls : '');
         }
 
+        async function waitForCover(movieId, attempts = 8, delayMs = 700) {
+            for (let i = 0; i < attempts; i++) {
+                const movie = await fetchMovie(movieId);
+                if (movie?.front_image_path) return movie;
+                await sleep(delayMs);
+            }
+            return await fetchMovie(movieId);
+        }
+
         async function saveRow(rowData) {
             const url = rowData.inputEl.value.trim();
             if (!url) {
@@ -1024,19 +1041,22 @@
             rowStatus(rowData, 'Saving…', '');
             try {
                 await assignCoverFromUrl(rowData.movie.id, url);
-                // Fetch updated movie to confirm and update thumb
-                const updated = await fetchMovie(rowData.movie.id);
+                // Wait for server-side image fetch + persistence.
+                const updated = await waitForCover(rowData.movie.id);
                 if (updated) {
                     rowData.movie = updated;
                     updateRowThumb(rowData, updated);
                 }
+                if (!updated?.front_image_path) {
+                    throw new Error('Cover URL was submitted, but Stash did not persist a cover image');
+                }
                 rowStatus(rowData, '✓ Saved', 'ok');
                 rowData.inputEl.value = '';
                 const row = rowData.btnEl.closest('.vf-cover-url-row');
-                if (row) row.classList.toggle('has-cover', !!updated?.front_image_path);
+                if (row) row.classList.toggle('has-cover', true);
             } catch (err) {
                 console.error('[vintage-films] Cover URL save failed', err);
-                rowStatus(rowData, '✗ Failed', 'err');
+                rowStatus(rowData, `✗ ${err?.message || 'Failed'}`, 'err');
             } finally {
                 rowData.btnEl.disabled = false;
             }
