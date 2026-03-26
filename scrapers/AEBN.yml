@@ -1,0 +1,140 @@
+name: AEBN
+# AEBN movie-page scraper focused on gay catalog pages.
+# Supports:
+# - sceneByURL (movie pages)
+# - groupByURL (movie pages)
+# - sceneByName / groupByName (search)
+#
+# Notes:
+# - Uses mobile pages because HTML is simpler and consistent.
+# - Scene scrape pulls: cover image, categories as tags, stars as performers, studio.
+# - Group scrape pulls: cover image, categories as tags, studio.
+# - Stash handles creating missing tags/performers/studios when scraping if configured.
+
+sceneByURL:
+  - action: scrapeXPath
+    url:
+      - m.aebn.net/movie/
+      - gay.aebn.com/gay/movies/
+    scraper: movieSceneScraper
+
+groupByURL:
+  - action: scrapeXPath
+    url:
+      - m.aebn.net/movie/
+      - gay.aebn.com/gay/movies/
+    scraper: movieGroupScraper
+
+sceneByName:
+  action: scrapeXPath
+  queryURL: https://m.aebn.net/search/movies?theaterId=68257&genreId=102&locale=en&initial=true&searchString={}
+  scraper: movieSearchScraper
+
+groupByName:
+  action: scrapeXPath
+  queryURL: https://m.aebn.net/search/movies?theaterId=68257&genreId=102&locale=en&initial=true&searchString={}
+  scraper: movieSearchGroupScraper
+
+sceneByQueryFragment:
+  action: scrapeXPath
+  queryURL: "{url}"
+  scraper: movieSceneScraper
+
+xPathScrapers:
+  movieSearchScraper:
+    common:
+      $rows: //a[contains(@href,"/movie/") and normalize-space(text())!=""]
+    scene:
+      Title: $rows/text()
+      URL:
+        selector: $rows/@href
+        postProcess:
+          - replace:
+              - regex: ^
+                with: https://m.aebn.net
+      Image:
+        selector: //img[contains(@src,"/BoxCovers/")]/@src
+
+  movieSearchGroupScraper:
+    common:
+      $rows: //a[contains(@href,"/movie/") and normalize-space(text())!=""]
+    group:
+      Name: $rows/text()
+      URL:
+        selector: $rows/@href
+        postProcess:
+          - replace:
+              - regex: ^
+                with: https://m.aebn.net
+      FrontImage: //img[contains(@src,"/BoxCovers/")]/@src
+
+  movieSceneScraper:
+    scene:
+      Title:
+        selector: //h1[1]/text() | //meta[@property="og:title"]/@content
+        concat: ""
+      URL:
+        selector: //meta[@property="og:url"]/@content | //link[@rel="canonical"]/@href
+        concat: ""
+      Image:
+        selector: //img[contains(@src,"/BoxCovers/")][1]/@src | //meta[@property="og:image"]/@content
+        concat: ""
+      Studio:
+        Name: //a[contains(@href,"/studio/")][1]/text()
+      Tags:
+        Name: //a[contains(@href,"/search/movies/category/")]/text()
+      Performers:
+        Name: //a[contains(@href,"/star/")]/text()
+      Date:
+        selector: //text()[contains(.,"Released")]
+        concat: ""
+        postProcess:
+          - replace:
+              - regex: '.*((19|20)\d{2}).*'
+                with: $1-01-01
+
+      Groups:
+        Name:
+          selector: //h1[1]/text() | //meta[@property="og:title"]/@content
+          concat: ""
+        URL:
+          selector: //meta[@property="og:url"]/@content | //link[@rel="canonical"]/@href
+          concat: ""
+
+  movieGroupScraper:
+    group:
+      Name:
+        selector: //h1[1]/text() | //meta[@property="og:title"]/@content
+        concat: ""
+      URL:
+        selector: //meta[@property="og:url"]/@content | //link[@rel="canonical"]/@href
+        concat: ""
+      FrontImage:
+        selector: //img[contains(@src,"/BoxCovers/")][1]/@src | //meta[@property="og:image"]/@content
+        concat: ""
+      Studio:
+        Name: //a[contains(@href,"/studio/")][1]/text()
+      Tags:
+        Name: //a[contains(@href,"/search/movies/category/")]/text()
+      Date:
+        selector: //text()[contains(.,"Released")]
+        concat: ""
+        postProcess:
+          - replace:
+              - regex: '.*((19|20)\d{2}).*'
+                with: $1-01-01
+
+driver:
+  cookies:
+    - CookieURL: "https://m.aebn.net"
+      Cookies:
+        - Name: "ageConfirmed"
+          Domain: "m.aebn.net"
+          Value: "true"
+          Path: "/"
+    - CookieURL: "https://gay.aebn.com"
+      Cookies:
+        - Name: "ageConfirmed"
+          Domain: "gay.aebn.com"
+          Value: "true"
+          Path: "/"
