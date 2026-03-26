@@ -1,0 +1,45 @@
+- id: opie_decadeTagger
+  name: Decade Tagger
+  metadata:
+    description: >
+  version: 1.0-911da41
+  date: 2026-03-26 02:09:45
+  path: opie_decadeTagger.zip
+  sha256: ff0c0b0feb7fe5c712021bf8216fedaf768cafc9a059d8c28fb464a81f0d2df9
+
+- id: opie_performerCircumcisedBadge
+  name: Performer Cut/Uncut Badge
+  metadata:
+    description: Shows a cut or uncut badge overlay on performer card images based on their circumcised status
+  version: 1.0.0-911da41
+  date: 2026-03-26 02:09:45
+  path: opie_performerCircumcisedBadge.zip
+  sha256: 690b2b617e9f159af7808b5e395c330cb6d1e45e6b52bf792087be6e9340d30c
+
+- id: opie_vintageFilms
+  name: VintageFilms
+  metadata:
+    description: >
+  version: 1.0-911da41
+  date: 2026-03-26 02:09:45
+  path: opie_vintageFilms.zip
+  sha256: 3eb8f5892dbfbc4655df5a5ae8c081f3cc4b4c5916769c8089fbe7a8540471a3
+
+- id: opie_vintagePerformerImport
+  name: opie_vintagePerformerImport
+  metadata:
+    description: Import vintage performers from a source list (text or CSV), then enrich with profile stats and images.
+  version: 0.1.0-911da41
+  date: 2026-03-26 02:09:45
+  path: opie_vintagePerformerImport.zip
+  sha256: 36bf3dedb25cc8d5c18fc02ab93b9a2cadc57b2b5ef7f4ee89f1f5b91a942f72
+
+- id: opie_performerBodyFields
+  name: Performer Body Fields
+  metadata:
+    description: Adds editable Body Type, Body Influence, Position, Persona, Ethnicity, and Orientation fields to the performers list page. Fields are stored as performer custom fields.
+  version: 1.0.0-911da41
+  date: 2026-03-26 02:09:45
+  path: opie_performerBodyFields.zip
+  sha256: 243d8f16a362911ff3ce23c0fc801fb7bbdfac9f9cdc81f0985975f42c3943c0
+
