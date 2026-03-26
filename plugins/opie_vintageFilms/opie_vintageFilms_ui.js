@@ -466,6 +466,16 @@
                 min-width: 5.5rem;
                 text-align: right;
             }
+            .vf-modal-cover-urls {
+                background: #5c3d8a;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                padding: 0.5rem 1rem;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .vf-modal-cover-urls:hover { background: #4a2f72; }
             .vf-modal-close,
             .vf-modal-repair-all,
             .vf-modal-scrape-missing {
@@ -575,6 +585,157 @@
                 background: rgba(138, 97, 24, 0.92);
             }
             .vf-gallery-card-repair:hover { background: rgba(109, 75, 18, 0.97); }
+            /* ── Cover URL Editor Modal ─────────────────────────── */
+            #vf-cover-url-modal {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.87);
+                z-index: 10001;
+                overflow-y: auto;
+            }
+            #vf-cover-url-modal.open { display: block; }
+            #vf-cover-url-modal-content {
+                max-width: 1000px;
+                margin: 2rem auto;
+                padding: 2rem;
+                background: #1b1b2f;
+                border-radius: 8px;
+                position: relative;
+            }
+            .vf-cover-url-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1.5rem;
+                border-bottom: 2px solid #444;
+                padding-bottom: 1rem;
+                gap: 0.75rem;
+                flex-wrap: wrap;
+            }
+            .vf-cover-url-header h2 { margin: 0; color: #fff; font-size: 1.5rem; }
+            .vf-cover-url-header-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+            .vf-cover-url-filter {
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+                font-size: 0.82rem;
+                color: #aaa;
+                user-select: none;
+                cursor: pointer;
+            }
+            .vf-cover-url-filter input { cursor: pointer; }
+            .vf-cover-url-save-all {
+                background: #2f7d32;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                padding: 0.5rem 1rem;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 0.85rem;
+                white-space: nowrap;
+            }
+            .vf-cover-url-save-all:hover { background: #256628; }
+            .vf-cover-url-close {
+                background: #d32f2f;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                padding: 0.5rem 1rem;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .vf-cover-url-close:hover { background: #b71c1c; }
+            #vf-cover-url-list { display: flex; flex-direction: column; gap: 0.5rem; }
+            .vf-cover-url-row {
+                display: grid;
+                grid-template-columns: 64px 1fr auto auto;
+                align-items: center;
+                gap: 0.75rem;
+                background: #12121f;
+                border: 1px solid #2a2a45;
+                border-radius: 5px;
+                padding: 0.5rem 0.75rem;
+            }
+            .vf-cover-url-row.has-cover { opacity: 0.6; }
+            .vf-cover-url-row.has-cover:focus-within,
+            .vf-cover-url-row.has-cover:hover { opacity: 1; }
+            .vf-cover-url-thumb {
+                width: 64px;
+                height: 90px;
+                object-fit: cover;
+                border-radius: 3px;
+                background: #2a2a45;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+                color: #555;
+                flex-shrink: 0;
+            }
+            .vf-cover-url-thumb img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 3px;
+            }
+            .vf-cover-url-info { min-width: 0; }
+            .vf-cover-url-title {
+                color: #fff;
+                font-weight: bold;
+                font-size: 0.88rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .vf-cover-url-meta { color: #888; font-size: 0.75rem; margin-top: 0.2rem; }
+            .vf-cover-url-input-wrap {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+                min-width: 0;
+            }
+            .vf-cover-url-input {
+                width: 100%;
+                background: #0d0d1a;
+                border: 1px solid #3a3a5e;
+                border-radius: 3px;
+                color: #ddd;
+                padding: 0.35rem 0.5rem;
+                font-size: 0.8rem;
+                min-width: 200px;
+                box-sizing: border-box;
+            }
+            .vf-cover-url-input:focus { outline: none; border-color: #0066cc; }
+            .vf-cover-url-status {
+                font-size: 0.7rem;
+                height: 1em;
+                color: #888;
+                white-space: nowrap;
+            }
+            .vf-cover-url-status.ok { color: #66bb6a; }
+            .vf-cover-url-status.err { color: #ef5350; }
+            .vf-cover-url-btn {
+                background: #0066cc;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                padding: 0.4rem 0.8rem;
+                font-size: 0.78rem;
+                cursor: pointer;
+                font-weight: bold;
+                white-space: nowrap;
+                align-self: center;
+            }
+            .vf-cover-url-btn:hover { background: #0052a3; }
+            .vf-cover-url-btn:disabled { opacity: 0.6; cursor: progress; }
+            .vf-cover-url-empty {
+                color: #666;
+                text-align: center;
+                padding: 2rem;
+                font-size: 0.9rem;
+            }
             /* Scene card badge */
             .vf-badge {
                 position: absolute;
@@ -618,6 +779,7 @@
                             <button class="vf-modal-root-save" type="button">Save</button>
                             <span class="vf-modal-root-status">Loading...</span>
                         </div>
+                        <button class="vf-modal-cover-urls">🖼️ Cover URLs</button>
                         <button class="vf-modal-scrape-missing">Scrape Missing Covers</button>
                         <button class="vf-modal-repair-all">Repair All</button>
                         <button class="vf-modal-close">✕ Close</button>
@@ -743,6 +905,18 @@
             }, 3500);
         });
 
+        // Cover URLs button opens the cover-URL editor, sharing the same movies array
+        modal.querySelector('.vf-modal-cover-urls').addEventListener('click', async (e) => {
+            e.stopPropagation();
+            modal.classList.remove('open');
+            let coverUrlModal = document.getElementById('vf-cover-url-modal');
+            if (!coverUrlModal) {
+                coverUrlModal = await buildCoverUrlModal(movies);
+            }
+            coverUrlModal._renderList();
+            coverUrlModal.classList.add('open');
+        });
+
         modal.querySelector('.vf-modal-close').addEventListener('click', () => {
             modal.classList.remove('open');
         });
@@ -798,6 +972,180 @@
         setTimeout(() => input.remove(), 100);
     }
 
+    // ── Cover URL Editor ──────────────────────────────────────────────────────
+    async function assignCoverFromUrl(movieId, url) {
+        // Stash accepts an image URL directly in front_image; the server downloads it.
+        await gql(M_MOVIE_UPDATE, {
+            input: { id: movieId, front_image: url.trim() },
+        });
+    }
+
+    async function buildCoverUrlModal(moviesRef) {
+        let modal = document.getElementById('vf-cover-url-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'vf-cover-url-modal';
+            document.body.appendChild(modal);
+        }
+
+        modal.innerHTML = `
+            <div id="vf-cover-url-modal-content">
+                <div class="vf-cover-url-header">
+                    <h2>🖼️ Assign Cover URLs</h2>
+                    <div class="vf-cover-url-header-actions">
+                        <label class="vf-cover-url-filter">
+                            <input id="vf-cover-url-missing-only" type="checkbox" checked />
+                            Show missing covers only
+                        </label>
+                        <button class="vf-cover-url-save-all">Save All</button>
+                        <button class="vf-cover-url-close">✕ Close</button>
+                    </div>
+                </div>
+                <div id="vf-cover-url-list"></div>
+            </div>
+        `;
+
+        const list = modal.querySelector('#vf-cover-url-list');
+        const missingOnlyChk = modal.querySelector('#vf-cover-url-missing-only');
+        const rowMap = new Map(); // movieId → { inputEl, statusEl, btnEl, movie }
+
+        function rowStatus(rowData, text, cls = '') {
+            rowData.statusEl.textContent = text;
+            rowData.statusEl.className = 'vf-cover-url-status' + (cls ? ' ' + cls : '');
+        }
+
+        async function saveRow(rowData) {
+            const url = rowData.inputEl.value.trim();
+            if (!url) {
+                rowStatus(rowData, 'Nothing to save', '');
+                return;
+            }
+            rowData.btnEl.disabled = true;
+            rowStatus(rowData, 'Saving…', '');
+            try {
+                await assignCoverFromUrl(rowData.movie.id, url);
+                // Fetch updated movie to confirm and update thumb
+                const updated = await fetchMovie(rowData.movie.id);
+                if (updated) {
+                    rowData.movie = updated;
+                    updateRowThumb(rowData, updated);
+                }
+                rowStatus(rowData, '✓ Saved', 'ok');
+                rowData.inputEl.value = '';
+                const row = rowData.btnEl.closest('.vf-cover-url-row');
+                if (row) row.classList.toggle('has-cover', !!updated?.front_image_path);
+            } catch (err) {
+                console.error('[vintage-films] Cover URL save failed', err);
+                rowStatus(rowData, '✗ Failed', 'err');
+            } finally {
+                rowData.btnEl.disabled = false;
+            }
+        }
+
+        function updateRowThumb(rowData, movie) {
+            const thumbWrap = rowData.thumbWrap;
+            if (!thumbWrap) return;
+            if (movie.front_image_path) {
+                thumbWrap.innerHTML = `<img src="${movie.front_image_path}?${Date.now()}" alt="" />`;
+            } else {
+                thumbWrap.textContent = '📽️';
+            }
+        }
+
+        function renderList() {
+            list.innerHTML = '';
+            rowMap.clear();
+            const missingOnly = missingOnlyChk.checked;
+            const movies = moviesRef.filter(m => !missingOnly || !m.front_image_path);
+
+            if (!movies.length) {
+                list.innerHTML = `<div class="vf-cover-url-empty">${
+                    missingOnly ? '🎉 All films already have a cover!' : 'No films found.'
+                }</div>`;
+                return;
+            }
+
+            for (const m of movies) {
+                const hasCover = !!m.front_image_path;
+                const row = document.createElement('div');
+                row.className = 'vf-cover-url-row' + (hasCover ? ' has-cover' : '');
+
+                const thumbWrap = document.createElement('div');
+                thumbWrap.className = 'vf-cover-url-thumb';
+                if (hasCover) {
+                    thumbWrap.innerHTML = `<img src="${m.front_image_path}" alt="" />`;
+                } else {
+                    thumbWrap.textContent = '📽️';
+                }
+
+                const info = document.createElement('div');
+                info.className = 'vf-cover-url-info';
+                info.innerHTML = `
+                    <div class="vf-cover-url-title" title="${m.name}">${m.name}</div>
+                    <div class="vf-cover-url-meta">${movieMetaText(m)}</div>
+                `;
+
+                const inputWrap = document.createElement('div');
+                inputWrap.className = 'vf-cover-url-input-wrap';
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'vf-cover-url-input';
+                input.placeholder = 'Paste direct image URL…';
+                const status = document.createElement('div');
+                status.className = 'vf-cover-url-status';
+                inputWrap.appendChild(input);
+                inputWrap.appendChild(status);
+
+                const btn = document.createElement('button');
+                btn.className = 'vf-cover-url-btn';
+                btn.textContent = 'Save';
+
+                row.appendChild(thumbWrap);
+                row.appendChild(info);
+                row.appendChild(inputWrap);
+                row.appendChild(btn);
+                list.appendChild(row);
+
+                const rowData = { movie: m, inputEl: input, statusEl: status, btnEl: btn, thumbWrap };
+                rowMap.set(m.id, rowData);
+
+                btn.addEventListener('click', () => saveRow(rowData));
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); saveRow(rowData); }
+                });
+            }
+        }
+
+        missingOnlyChk.addEventListener('change', renderList);
+
+        modal.querySelector('.vf-cover-url-save-all').addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+            const saves = [];
+            for (const rowData of rowMap.values()) {
+                if (rowData.inputEl.value.trim()) saves.push(saveRow(rowData));
+            }
+            if (saves.length) {
+                await Promise.allSettled(saves);
+            }
+            btn.textContent = saves.length ? 'Done' : 'Nothing to save';
+            setTimeout(() => { btn.disabled = false; btn.textContent = 'Save All'; }, 1500);
+        });
+
+        modal.querySelector('.vf-cover-url-close').addEventListener('click', () => {
+            modal.classList.remove('open');
+        });
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('open');
+        });
+
+        // Store renderList so callers can refresh before opening
+        modal._renderList = renderList;
+
+        return modal;
+    }
+
     // ── Navbar ────────────────────────────────────────────────────────────────
     async function buildNavbar() {
         const navbar = document.querySelector('.navbar-nav');
@@ -827,6 +1175,7 @@
                 drop.id = 'vf-dropdown';
 
                 const modal = await buildGalleryModal(movies);
+                const coverUrlModal = await buildCoverUrlModal(movies);
 
                 const hdr = document.createElement('div');
                 hdr.className = 'vf-dropdown-header';
@@ -839,6 +1188,19 @@
                     modal.classList.add('open');
                 });
                 hdr.appendChild(galleryBtn);
+
+                const coverUrlBtn = document.createElement('button');
+                coverUrlBtn.textContent = '🖼️ Cover URLs';
+                coverUrlBtn.style.cssText = 'background:#5c3d8a;';
+                coverUrlBtn.addEventListener('mouseenter', () => coverUrlBtn.style.background = '#4a2f72');
+                coverUrlBtn.addEventListener('mouseleave', () => coverUrlBtn.style.background = '#5c3d8a');
+                coverUrlBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    drop.classList.remove('open');
+                    coverUrlModal._renderList();
+                    coverUrlModal.classList.add('open');
+                });
+                hdr.appendChild(coverUrlBtn);
                 drop.appendChild(hdr);
 
                 const search = document.createElement('input');
