@@ -641,6 +641,18 @@
                 white-space: nowrap;
             }
             .vf-cover-url-save-all:hover { background: #256628; }
+            .vf-cover-url-refresh {
+                background: #546e7a;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                padding: 0.5rem 1rem;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 0.85rem;
+                white-space: nowrap;
+            }
+            .vf-cover-url-refresh:hover { background: #455a64; }
             .vf-cover-url-close {
                 background: #d32f2f;
                 color: #fff;
@@ -1005,6 +1017,7 @@
                             <input id="vf-cover-url-missing-only" type="checkbox" checked />
                             Show missing covers only
                         </label>
+                        <button class="vf-cover-url-refresh">Refresh</button>
                         <button class="vf-cover-url-save-all">Save All</button>
                         <button class="vf-cover-url-close">✕ Close</button>
                     </div>
@@ -1015,7 +1028,14 @@
 
         const list = modal.querySelector('#vf-cover-url-list');
         const missingOnlyChk = modal.querySelector('#vf-cover-url-missing-only');
+        const refreshBtn = modal.querySelector('.vf-cover-url-refresh');
         const rowMap = new Map(); // movieId → { inputEl, statusEl, btnEl, movie }
+
+        async function refreshMoviesRef() {
+            const latest = await fetchAllMovies();
+            moviesRef.splice(0, moviesRef.length, ...latest);
+            return moviesRef;
+        }
 
         function rowStatus(rowData, text, cls = '') {
             rowData.statusEl.textContent = text;
@@ -1138,6 +1158,21 @@
 
         missingOnlyChk.addEventListener('change', renderList);
 
+        refreshBtn.addEventListener('click', async () => {
+            const original = refreshBtn.textContent;
+            refreshBtn.disabled = true;
+            refreshBtn.textContent = 'Refreshing…';
+            try {
+                await refreshMoviesRef();
+                renderList();
+            } catch (err) {
+                console.error('[vintage-films] Failed to refresh cover URL list', err);
+            } finally {
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = original;
+            }
+        });
+
         modal.querySelector('.vf-cover-url-save-all').addEventListener('click', async (e) => {
             const btn = e.currentTarget;
             btn.disabled = true;
@@ -1160,8 +1195,9 @@
             if (e.target === modal) modal.classList.remove('open');
         });
 
-        // Store renderList so callers can refresh before opening
+        // Store helpers so callers can refresh state before opening.
         modal._renderList = renderList;
+        modal._refreshMovies = refreshMoviesRef;
 
         return modal;
     }
@@ -1217,8 +1253,16 @@
                 coverUrlBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     drop.classList.remove('open');
-                    coverUrlModal._renderList();
-                    coverUrlModal.classList.add('open');
+                    Promise.resolve(coverUrlModal._refreshMovies?.())
+                        .then(() => {
+                            coverUrlModal._renderList();
+                            coverUrlModal.classList.add('open');
+                        })
+                        .catch((err) => {
+                            console.error('[vintage-films] Failed to refresh cover URL modal', err);
+                            coverUrlModal._renderList();
+                            coverUrlModal.classList.add('open');
+                        });
                 });
                 hdr.appendChild(coverUrlBtn);
                 drop.appendChild(hdr);
