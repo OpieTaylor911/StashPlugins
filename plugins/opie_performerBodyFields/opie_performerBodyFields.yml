@@ -1,0 +1,8 @@
+name: Performer Body Fields
+description: Adds editable Body Type, Body Influence, Position, Persona, Ethnicity, and Orientation fields to the performers list page. Fields are stored as performer custom fields.
+version: 1.0.0
+ui:
+  javascript:
+    - opie_performerBodyFields.js
+  css:
+    - opie_performerBodyFields.css

@@ -1,0 +1,53 @@
+name: opie_vintagePerformerImport
+description: Import vintage performers from a source list (text or CSV), then enrich with profile stats and images.
+version: 0.1.0
+url: ""
+
+settings:
+  sourceListUrl:
+    displayName: Source List URL
+    description: URL of a performer list page (example cocksuckersguide toplist URL).
+    type: STRING
+  namesText:
+    displayName: Performer Names (one per line)
+    description: Optional newline-separated performer names. Used before CSV.
+    type: STRING
+  csvPath:
+    displayName: CSV Path (container path)
+    description: Optional CSV file path inside the container.
+    type: STRING
+  csvNameColumn:
+    displayName: CSV Name Column
+    description: Column name that contains performer names.
+    type: STRING
+  updateExisting:
+    displayName: Update Existing Performers
+    description: If enabled, existing performers are enriched when source data is found.
+    type: BOOLEAN
+  overwriteDetails:
+    displayName: Overwrite Details
+    description: If disabled, imported details are appended to existing details.
+    type: BOOLEAN
+  overwriteImage:
+    displayName: Overwrite Image
+    description: If disabled, only performers missing an image are updated.
+    type: BOOLEAN
+  dryRun:
+    displayName: Dry Run
+    description: Log actions without writing changes.
+    type: BOOLEAN
+  timeoutSeconds:
+    displayName: HTTP Timeout Seconds
+    description: Timeout for source HTTP requests.
+    type: NUMBER
+
+exec:
+  - python3
+  - "{pluginDir}/opie_vintagePerformerImport.py"
+interface: raw
+
+tasks:
+  - name: Import Vintage Performers
+    description: Import performers from settings/args and enrich from source site.
+    defaultArgs:
+      mode: import

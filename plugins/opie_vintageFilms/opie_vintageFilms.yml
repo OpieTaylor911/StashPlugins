@@ -1,0 +1,59 @@
+name: VintageFilms
+description: >
+  Links vintage scenes to Movie records.
+  Scenes directly in /Gay/Vintage (or decade subfolders 1970s–2000s) are
+  treated as full films (Mode A: one Movie per file).
+  Scenes in a named subfolder under /Gay/Vintage are treated as individual
+  scenes of a multi-scene film (Mode B: one Movie per folder, scene_index
+  from the leading digit in the filename).
+  Movies are looked up on TPDB by title+year; if found, cover art,
+  description, director and studio are applied. Unmatched films still get
+  a Stash Movie record so they are browsable.
+version: "1.0"
+url: ""
+
+ui:
+  javascript:
+    - opie_vintageFilms_ui.js
+
+settings:
+  vintageRoot:
+    displayName: Vintage Root Path
+    description: Absolute path inside the Stash container where vintage files live.
+    type: STRING
+
+exec:
+  - python3
+  - "{pluginDir}/opie_vintageFilms_hook.py"
+interface: raw
+
+hooks:
+  - name: Vintage Films – Scene Create
+    description: Auto-link a newly scanned vintage scene to its Movie record
+    triggeredBy:
+      - Scene.Create.Post
+  - name: Vintage Films – Scene Update
+    description: Auto-link a vintage scene to its Movie record on update
+    triggeredBy:
+      - Scene.Update.Post
+
+tasks:
+  - name: Process All Vintage Films
+    description: >
+      Scan every scene under /Gay/Vintage, create Movie records and link
+      scenes. Safe to re-run — existing links are skipped.
+    defaultArgs:
+      mode: process_all
+  - name: Repair Vintage Metadata
+    description: >
+      Re-evaluate existing linked vintage movies against TPDB using strict
+      vintage matching rules. Safe matches are refreshed; suspicious imported
+      metadata is cleared when no credible vintage match exists.
+    defaultArgs:
+      mode: repair_all
+  - name: Scrape Missing Covers
+    description: >
+      For linked vintage movies that do not have a front cover, scrape cover
+      metadata from AEBN first and TPDB as fallback.
+    defaultArgs:
+      mode: scrape_missing_covers

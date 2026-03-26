@@ -1,0 +1,35 @@
+name: Decade Tagger
+description: >
+  Tags scenes with Filmed-1990s, Filmed-1980s, etc.
+  Only tags when the year is CERTAIN — from a scraped/set date OR a 4-digit
+  year in the filename (e.g. "(1995)", "[1985]", ".1978.", "_1974_").
+  Adds a Decades dropdown to the Stash navbar for quick browsing.
+version: "1.0"
+url: ""
+
+ui:
+  javascript:
+    - opie_decadeTagger_ui.js
+
+exec:
+  - python3
+  - "{pluginDir}/opie_decadeTagger_hook.py"
+interface: raw
+
+hooks:
+  - name: Decade Tag – Scene Create
+    description: Auto-apply decade tag when a scene is created (scan/import)
+    triggeredBy:
+      - Scene.Create.Post
+  - name: Decade Tag – Scene Update
+    description: Auto-apply decade tag when a scene is updated (scrape/edit)
+    triggeredBy:
+      - Scene.Update.Post
+
+tasks:
+  - name: Re-Decade All Scenes
+    description: >
+      Apply / fix Filmed-XXXX decade tags on all scenes where the year
+      is certain. Skips scenes with no date and no year in the filename.
+    defaultArgs:
+      mode: retag
