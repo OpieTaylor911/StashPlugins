@@ -1,5 +1,5 @@
 # OpieTaylor's Stash Plugins
-<img src=logo.png">
+<img src="logo.png">
 
 > Plugins for [Stash](https://github.com/stashapp/stash) focused on gay content management.
 > Most existing plugins are written for straight libraries or don't cover my use cases — so I'm building my own and sharing them. Use at your own risk.
