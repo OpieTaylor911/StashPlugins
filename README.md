@@ -64,6 +64,7 @@ Fields are stored as **performer custom fields** and are fully editable inline.
 ---
 
 ### ✂️ Performer Cut/Uncut Badge `v1.0`
+<img src="2026-03-27_10-47.png">
 
 Overlays a small **cut** or **uncut** badge on performer card images based on their circumcised status.
 
