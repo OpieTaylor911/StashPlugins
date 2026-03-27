@@ -30,7 +30,7 @@ Tags scenes with decade tags like `Filmed-1990s`, `Filmed-1980s`, etc.
 ---
 
 ### 🎬 Vintage Films `v1.0`
-
+<img src="VintageFilms.png">
 Links vintage scenes to Movie records and enriches them with metadata from TPDB and AEBN.
 
 **Two file layout modes:**
