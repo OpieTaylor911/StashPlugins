@@ -52,7 +52,7 @@ Links vintage scenes to Movie records and enriches them with metadata from TPDB 
 - `Vintage Root Path` — absolute container path to your vintage files root
 
 ---
-
+<img src="2026-03-27_10-46.png">
 ### 🧑 Performer Body Fields `v1.0`
 
 Adds extended editable fields to the performers list page:
