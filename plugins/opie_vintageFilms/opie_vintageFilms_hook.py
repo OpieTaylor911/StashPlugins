@@ -35,7 +35,7 @@ DEFAULT_VINTAGE_ROOT = "/data/stash/Gay/Vintage"  # path INSIDE the container
 DECADE_FOLDERS = {"1960s", "1970s", "1980s", "1990s", "2000s", "2010s"}
 SKIP_FOLDERS   = {"@eaDir", "Thumbs.db"}
 
-TPDB_API_KEY   = os.environ.get("TPDB_API_KEY", "K5qjgcWrrKSwYTJqFhKIqfuOjen1wc4JVefFaVfp08b965c7")
+TPDB_API_KEY   = os.environ.get("TPDB_API_KEY", "")
 TPDB_BASE      = "https://api.theporndb.net"
 IMPORT_URL_HOSTS = ("gaydvdempire.com", "adultempire.com", "theporndb.net")
 AEBN_BASE = "https://gay.aebn.com"
